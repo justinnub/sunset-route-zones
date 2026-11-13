@@ -168,7 +168,7 @@
         '<p class="note">Auto-build groups neighboring ZIPs into compact zones and replaces the current ones. Undo brings them back.</p>' +
       '</section>' +
 
-      '<section class="sec"><h2>Stores</h2><p class="help">Independent smoke shops, convenience stores and liquor stores. Click a ZIP on the map to list its stores with addresses. A gold pulse marks shops listed in the last 90 days.</p>' +
+      '<section class="sec sec-stores"><h2>Stores</h2><p class="help">Independent smoke shops, convenience stores and liquor stores. Click a ZIP on the map to list its stores with addresses. A gold pulse marks shops listed in the last 90 days.</p>' +
         '<div class="skeys">' +
           '<label class="check"><input type="checkbox" id="l-sS"><i class="dot kS"></i>Smoke and vape shops<span id="n-S"></span></label>' +
           '<label class="check"><input type="checkbox" id="l-sC"><i class="dot kC"></i>Convenience stores<span id="n-C"></span></label>' +
@@ -191,7 +191,7 @@
         '<div class="row"><button class="btn sm" id="copy-active">Copy active ZIP list</button><button class="btn sm ghost" id="revert">Discard my changes</button></div>' +
         '<p class="note" id="save-note">Your edits are kept in this browser as you work. Save for everyone updates the map for anyone who opens the link.</p>' +
       '</section>' +
-      '<div class="foot">ZIP boundaries are US Census ZIP Code Tabulation Areas (2010). A few newer or PO-box-only ZIPs are not drawn. Distances are straight-line miles from the warehouse to the center of each ZIP, not drive miles. Store locations &copy; OpenStreetMap contributors, a volunteer-built map that does not list every shop.</div>' +
+      '<div class="foot">ZIP boundaries are US Census ZIP Code Tabulation Areas (2010). A few newer or PO-box-only ZIPs are not drawn. Distances are straight-line miles from the warehouse to the center of each ZIP, not drive miles.<span class="g-st"> Store locations &copy; OpenStreetMap contributors, a volunteer-built map that does not list every shop.</span></div>' +
     '</aside>' +
 
     '<main class="stage">' +
@@ -228,8 +228,8 @@
         '<div><h3>Auto-build</h3><p>Splits the active ZIPs into the number of zones you choose, keeping each zone compact. Use it as a starting point, then paint to adjust.</p></div>' +
         '<div><h3>Lines on the map</h3><p>Gold outline: the edge of your active area. Light outline: the border between two zones. Thin pale lines: approximate freeway paths for orientation. They hide when you zoom in close.</p></div>' +
         '<div><h3>Moving around</h3><p>Scroll or pinch to zoom. Drag to pan. While a paint tool is on, hold <kbd>Space</kbd> and drag to pan. <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes the last change.</p></div>' +
-        '<div><h3>Stores</h3><p>White dots are smoke and vape shops, dark dots are convenience stores, gold dots are liquor stores. Chains like Circle K and QuikTrip are left out. Click a ZIP to see its stores and addresses.</p></div>' +
-        '<div><h3>New shops feed</h3><p>Plays through the most recently listed shops one by one, flying the map to each. The date is when the shop was added or last updated in OpenStreetMap, or the day your team added it.</p></div>' +
+        '<div class="g-st"><h3>Stores</h3><p>White dots are smoke and vape shops, dark dots are convenience stores, gold dots are liquor stores. Chains like Circle K and QuikTrip are left out. Click a ZIP to see its stores and addresses.</p></div>' +
+        '<div class="g-st"><h3>New shops feed</h3><p>Plays through the most recently listed shops one by one, flying the map to each. The date is when the shop was added or last updated in OpenStreetMap, or the day your team added it.</p></div>' +
         '<div><h3>Saving</h3><p>Edits stay in your browser until you press <b>Save for everyone</b>. That publishes the map so anyone with the link sees your latest zones.</p></div>' +
         '<div><h3>Export</h3><p><b>Download CSV</b> gives one row per ZIP with city, status, zone and miles. It opens in Excel or Google Sheets.</p></div>' +
       '</div>' +
@@ -262,6 +262,7 @@
   var BASE = (window.SWW_STORES || '').split('\n').filter(Boolean).map(function (l) {
     var f = l.split('|'); return { n: f[0], k: f[1], a: f[2], x: wx(+f[4]), y: wy(+f[3]), lat: f[3], lon: f[4], d: '20' + f[5], zi: zipIndex[f[6]] };
   }).filter(function (o) { return o.zi !== undefined; });
+  if (!BASE.length) document.body.classList.add('nostores');
   var STORES = [], byZip = [], gS = $('#g-st'), marks = [], hovS = -1, pulse = $('#pulse'), pulseAt = null;
   function rebuildStores() {
     STORES = BASE.slice();
@@ -392,7 +393,7 @@
       c = {}; for (i = 0; i < N; i++) if (act[i]) c[Z[i].c] = (c[Z[i].c] || 0) + 1;
       h = '<h3>City</h3><ul>' + Object.keys(c).sort(function (a, b) { return c[b] - c[a]; }).map(function (n) { return '<li><i style="background:' + cityColor[n] + '"></i>' + esc(n) + '<span>' + c[n] + '</span></li>'; }).join('') + '</ul>';
     }
-    h += '<ul class="keys"><li><i class="dot kS"></i>Smoke shop</li><li><i class="dot kC"></i>Convenience store</li><li><i class="dot kL"></i>Liquor store</li><li><i style="border-top:2px solid var(--gold)"></i>Edge of active area</li>' + (st.ring ? '<li><i style="border-top:2px dashed var(--gold)"></i>Range ring</li>' : '') + '</ul>';
+    h += '<ul class="keys"><li class="g-st"><i class="dot kS"></i>Smoke shop</li><li class="g-st"><i class="dot kC"></i>Convenience store</li><li class="g-st"><i class="dot kL"></i>Liquor store</li><li><i style="border-top:2px solid var(--gold)"></i>Edge of active area</li>' + (st.ring ? '<li><i style="border-top:2px dashed var(--gold)"></i>Range ring</li>' : '') + '</ul>';
     $('#legend').innerHTML = h;
   }
   function renderCard() {
